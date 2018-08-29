@@ -33,7 +33,7 @@
 				      makeChart();
 				      }
 				  }
-				  xhr.open("GET", "https://charts.finance.ua/ru/currency/data-archive?for=official&source=1&indicator=usd");
+				  xhr.open("GET", "http://cors.io/?https://charts.finance.ua/ru/currency/data-archive?for=official&source=1&indicator=usd");
 				  xhr.setRequestHeader("Accept", 'application/json');
 				  xhr.send();
 				};
