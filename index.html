@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<style type="text/css">
+	html, body
+{
+    height: 100%;
+}
+		#container {
+    min-width: 320px;
+    height: 100%;
+}
+
+
+	</style>
+	<meta name="viewport" content="width=device-width, initial-scale=1" />
+	<meta charset="UTF-8">
+	<title>Курс валют</title>
+</head>
+<body>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+
+<script src="https://code.highcharts.com/modules/series-label.js"></script>
+	<div id="container"></div>
+
+	<script type="text/javascript">
+		var data = [];
+		let loadPosts = function () {
+				  let xhr = new XMLHttpRequest();
+				  xhr.onreadystatechange = function() {
+				    if (this.readyState === 4 && this.status === 200) {
+				      data = JSON.parse(this.responseText);
+				      makeChart();
+				      }
+				  }
+				  xhr.open("GET", "https://charts.finance.ua/ru/currency/data-archive?for=official&source=1&indicator=usd");
+				  xhr.setRequestHeader("Accept", 'application/json');
+				  xhr.send();
+				};
+		loadPosts();
+
+		function makeChart(){
+				var _series = [];
+				var temp;
+				var year = "";
+				for (var i = 0; i < data.length; i++) {
+					if (year != data[i][0].substr(-4)) {
+						if(year != "") _series.push(temp);
+						year = data[i][0].substr(-4);
+						temp = {name: year,visible: false, data: []};
+					}
+					var temparr = [];
+					temparr.push((new Date(data[i][0].replace(year,"1970"))).getTime());
+					temparr.push(parseFloat(data[i][1])/100);
+					temp.data.push(temparr);
+				};
+				temp.visible = true;
+				_series.push(temp);
+
+				Highcharts.chart('container', {
+		    chart: {
+		                zoomType: 'x'
+		            },
+		    title: {
+		        text: 'Курс по годам'
+		    },
+		    xAxis: {
+		        type: 'datetime'
+		        
+		    },
+		    yAxis: {
+		        
+		        title: {
+		            text: 'USD/UAH'
+		        }
+		    },
+		    tooltip: {
+		    	xDateFormat: '%m-%d',
+		    	shared: true,
+		        valueSuffix: ' грн'
+		    },
+
+
+
+		    
+		    series: _series
+		});
+	};
+	</script>
+
+
+</body>
+</html>
