@@ -5,13 +5,45 @@
 	html, body
 {
     height: 100%;
+    padding: 0;
+    margin: 0;
 }
-		#container {
+		.container {
     min-width: 320px;
     height: 100%;
 }
 
+#tabs{
+  height:100%;
+}
+#tabs .tab {
+    display: inline-block; /* выстраиваем вкладки в один ряд */
+    padding: 5px 10px;
+    cursor: pointer;
+    position: relative;
+    z-index:5;
+}
+#tabs .whiteborder {
+   border: 1px solid #707070;
+    border-bottom: 1px solid #fff;
+    border-radius: 3px 3px 0  0;
+}
+#tabs .tabContent {
 
+    height: 100%;
+    border: 1px solid #707070;
+    position: relative;
+    top: -1px; 
+    z-index:1;
+    /* padding: 10px; */
+    border-radius: 0 0 3px 3px
+}
+#tabs .hide {
+    display: none;
+}
+#tabs .show {
+    display: block;
+}
 	</style>
 	<meta name="viewport" content="width=device-width, initial-scale=1" />
 	<meta charset="UTF-8">
@@ -21,7 +53,23 @@
 	<script src="https://code.highcharts.com/highcharts.js"></script>
 
 <script src="https://code.highcharts.com/modules/series-label.js"></script>
-	<div id="container"></div>
+<div id="tabs">
+        <div class="tab whiteborder">USD</div>
+        <div class="tab">EUR</div>
+        <div class="tab">RUB</div>
+        <div class="tabContent">
+          	<div id="container1" class="container"></div>
+        </div>
+        <div class="tabContent">
+                    	<div id="container2" class="container"></div>
+        </div>
+        <div class="tabContent">
+                              	<div id="container3" class="container"></div>
+        </div>
+    </div>
+    
+
+
 
 	<script type="text/javascript">
 		var data = [];
@@ -38,7 +86,6 @@
 				  xhr.send();
 				};
 		loadPosts();
-
 		function makeChart(){
 				var _series = [];
 				var temp;
@@ -56,8 +103,7 @@
 				};
 				temp.visible = true;
 				_series.push(temp);
-
-				Highcharts.chart('container', {
+				Highcharts.chart('container1', {
 		    chart: {
 		                zoomType: 'x'
 		            },
@@ -65,8 +111,11 @@
 		        text: 'Курс по годам'
 		    },
 		    xAxis: {
-		        type: 'datetime'
-		        
+		        type: 'datetime',
+		        dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+        },
 		    },
 		    yAxis: {
 		        
@@ -79,15 +128,174 @@
 		    	shared: true,
 		        valueSuffix: ' грн'
 		    },
-
-
-
 		    
 		    series: _series
 		});
 	};
 	</script>
+  <script type="text/javascript">
+		var data = [];
+		let loadPosts2 = function () {
+				  let xhr = new XMLHttpRequest();
+				  xhr.onreadystatechange = function() {
+				    if (this.readyState === 4 && this.status === 200) {
+				      data = JSON.parse(this.responseText);
+				      makeChart2();
+				      }
+				  }
+				  xhr.open("GET", "https://cors.io/?https://charts.finance.ua/ru/currency/data-archive?for=official&source=1&indicator=eur");
+				  xhr.setRequestHeader("Accept", 'application/json');
+				  xhr.send();
+				};
+		loadPosts2();
+		function makeChart2(){
+				var _series = [];
+				var temp;
+				var year = "";
+				for (var i = 0; i < data.length; i++) {
+					if (year != data[i][0].substr(-4)) {
+						if(year != "") _series.push(temp);
+						year = data[i][0].substr(-4);
+						temp = {name: year,visible: false, data: []};
+					}
+					var temparr = [];
+					temparr.push((new Date(data[i][0].replace(year,"1970"))).getTime());
+					temparr.push(parseFloat(data[i][1])/100);
+					temp.data.push(temparr);
+				};
+				temp.visible = true;
+				_series.push(temp);
+				Highcharts.chart('container2', {
+		    chart: {
+		                zoomType: 'x'
+		            },
+		    title: {
+		        text: 'Курс по годам'
+		    },
+		    xAxis: {
+		        type: 'datetime',
+		        dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+        },
+		    },
+		    yAxis: {
+		        
+		        title: {
+		            text: 'EUR/UAH'
+		        }
+		    },
+		    tooltip: {
+		    	xDateFormat: '%m-%d',
+		    	shared: true,
+		        valueSuffix: ' грн'
+		    },
+		    
+		    series: _series
+		});
+	};
+	</script>
+<script type="text/javascript">
+		var data = [];
+		let loadPosts3 = function () {
+				  let xhr = new XMLHttpRequest();
+				  xhr.onreadystatechange = function() {
+				    if (this.readyState === 4 && this.status === 200) {
+				      data = JSON.parse(this.responseText);
+				      makeChart3();
+				      }
+				  }
+				  xhr.open("GET", "https://cors.io/?https://charts.finance.ua/ru/currency/data-archive?for=official&source=1&indicator=rub");
+				  xhr.setRequestHeader("Accept", 'application/json');
+				  xhr.send();
+				};
+		loadPosts3();
+		function makeChart3(){
+				var _series = [];
+				var temp;
+				var year = "";
+				for (var i = 0; i < data.length; i++) {
+					if (year != data[i][0].substr(-4)) {
+						if(year != "") _series.push(temp);
+						year = data[i][0].substr(-4);
+						temp = {name: year,visible: false, data: []};
+					}
+					var temparr = [];
+					temparr.push((new Date(data[i][0].replace(year,"1970"))).getTime());
+					temparr.push(parseFloat(data[i][1])/100);
+					temp.data.push(temparr);
+				};
+				temp.visible = true;
+				_series.push(temp);
+				Highcharts.chart('container3', {
+		    chart: {
+		                zoomType: 'x'
+		            },
+		    title: {
+		        text: 'Курс по годам'
+		    },
+		    xAxis: {
+		        type: 'datetime',
+		        dateTimeLabelFormats: { // don't display the dummy year
+            month: '%e. %b',
+            year: '%b'
+        },
+		    },
+		    yAxis: {
+		        
+		        title: {
+		            text: 'RUB/UAH'
+		        }
+		    },
+		    tooltip: {
+		    	xDateFormat: '%m-%d',
+		    	shared: true,
+		        valueSuffix: ' грн'
+		    },
+		    
+		    series: _series
+		});
+	};
+	</script>
+<script>
+    var tab; // заголовок вкладки
+var tabContent; // блок содержащий контент вкладки
 
 
+window.onload=function() {
+    tabContent=document.getElementsByClassName('tabContent');
+    tab=document.getElementsByClassName('tab');
+    hideTabsContent(1);
+}
+
+document.getElementById('tabs').onclick= function (event) {
+    var target=event.target;
+    if (target.className=='tab') {
+       for (var i=0; i<tab.length; i++) {
+           if (target == tab[i]) {
+               showTabsContent(i);
+               break;
+           }
+       }
+    }
+}
+
+function hideTabsContent(a) {
+    for (var i=a; i<tabContent.length; i++) {
+        tabContent[i].classList.remove('show');
+        tabContent[i].classList.add("hide");
+        tab[i].classList.remove('whiteborder');
+    }
+}
+
+function showTabsContent(b){
+    if (tabContent[b].classList.contains('hide')) {
+        hideTabsContent(0);
+        tab[b].classList.add('whiteborder');
+        tabContent[b].classList.remove('hide');
+        tabContent[b].classList.add('show');
+    }
+}
+    </script>
 </body>
 </html>
