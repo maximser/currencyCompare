@@ -222,7 +222,7 @@
 					}
 					var temparr = [];
 					temparr.push((new Date(data[i][0].replace(year,"1970"))).getTime());
-					temparr.push(parseFloat(data[i][1])/100);
+					temparr.push(parseFloat(data[i][1]));
 					temp.data.push(temparr);
 				};
 				temp.visible = true;
